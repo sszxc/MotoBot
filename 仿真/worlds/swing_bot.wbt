@@ -7,7 +7,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.0875990624494794 0.980703118317722 0.17477928361184178 2.2466562529348524
-  position 0.7432062717212379 0.6082290495325758 -0.6255767589446035
+  position 1.1295280544585824 0.7893143634846254 -0.9261428927862113
 }
 TexturedBackground {
 }
@@ -55,7 +55,7 @@ Robot {
             children [
               Group {
                 children [
-                  Solid {
+                  Transform {
                     children [
                       DEF Topcylinder Shape {
                         appearance PBRAppearance {
@@ -69,12 +69,10 @@ Robot {
                         }
                       }
                     ]
-                    name "solid(1)"
-                    boundingObject USE Topcylinder
                   }
-                  Solid {
+                  Transform {
                     translation 0 0 -0.12
-                    rotation 1 0 0 -1.57
+                    rotation 1 0 0 -1.5708
                     children [
                       DEF String Shape {
                         appearance DEF Metal PBRAppearance {
@@ -87,11 +85,9 @@ Robot {
                         }
                       }
                     ]
-                    boundingObject USE String
                   }
-                  Solid {
+                  Transform {
                     translation 0 0 -0.22
-                    rotation 1 0 0 0
                     children [
                       DEF Weight Shape {
                         appearance PBRAppearance {
@@ -101,17 +97,37 @@ Robot {
                         }
                       }
                     ]
-                    name "solid(2)"
-                    boundingObject USE Weight
-                    physics Physics {
-                      density -1
-                      mass 10
-                    }
                   }
                 ]
               }
             ]
             name "solid(3)"
+            boundingObject Group {
+              children [
+                Transform {
+                  children [
+                    USE Topcylinder
+                  ]
+                }
+                Transform {
+                  translation 0 0 -0.12
+                  rotation 1 0 0 -1.5707
+                  children [
+                    USE String
+                  ]
+                }
+                Transform {
+                  translation 0 0 -0.22
+                  children [
+                    USE Weight
+                  ]
+                }
+              ]
+            }
+            physics Physics {
+              density -1
+              mass 0.2
+            }
           }
         }
       ]
@@ -119,6 +135,8 @@ Robot {
   ]
   boundingObject USE BOX
   physics Physics {
+    density -1
+    mass 0.3
   }
   controller "Triangle_Controller"
 }

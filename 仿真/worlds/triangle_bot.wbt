@@ -6,8 +6,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.09281894312208538 0.9799124298871951 0.17651139779139377 2.155162861783243
-  position 0.7738445364033073 0.49327472689441915 -0.4769901129753346
+  orientation 0.013247629865168944 0.999383553041872 -0.03251175498737999 2.5497781517837996
+  position 0.5508824143156008 0.15079477459691001 -0.9789622942660434
 }
 TexturedBackground {
 }
@@ -25,20 +25,16 @@ Robot {
           translation 0 0.02 0.28
           rotation 1 0 0 -1.5707953071795862
           children [
-            Solid {
-              children [
-                DEF Wheel Shape {
-                  appearance DEF Rubber PBRAppearance {
-                    baseColor 0.235294 0.235294 0.235294
-                    roughness 1
-                    metalness 0
-                  }
-                  geometry Cylinder {
-                    height 0.06
-                    radius 0.02
-                  }
-                }
-              ]
+            DEF Wheel Shape {
+              appearance DEF Rubber PBRAppearance {
+                baseColor 0.235294 0.235294 0.235294
+                roughness 1
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.06
+                radius 0.02
+              }
             }
           ]
         }
@@ -46,12 +42,7 @@ Robot {
           translation 0 0.02 -0.28
           rotation 1 0 0 -1.5707953071795862
           children [
-            Solid {
-              children [
-                USE Wheel
-              ]
-              name "solid(1)"
-            }
+            USE Wheel
           ]
         }
         Transform {
@@ -112,66 +103,135 @@ Robot {
             translation 0 0.27 0
             rotation -1 0 0 1.5699999999999994
             children [
-              Group {
+              Transform {
                 children [
-                  Solid {
-                    children [
-                      DEF Topcylinder Shape {
-                        appearance PBRAppearance {
-                          baseColor 0.109804 0.109804 0.109804
-                          roughness 1
-                          metalness 0
-                        }
-                        geometry Cylinder {
-                          height 0.02
-                          radius 0.03
-                        }
-                      }
-                    ]
-                    name "solid(1)"
+                  DEF Topcylinder Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.109804 0.109804 0.109804
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Cylinder {
+                      height 0.02
+                      radius 0.03
+                    }
                   }
-                  Solid {
-                    translation 0 0 -0.12
-                    rotation 1 0 0 -1.57
-                    children [
-                      DEF String Shape {
-                        appearance USE Metal
-                        geometry Cylinder {
-                          height 0.18
-                          radius 0.004
-                        }
-                      }
-                    ]
+                ]
+              }
+              Transform {
+                translation 0 0 -0.12
+                rotation 1 0 0 -1.5708
+                children [
+                  DEF String Shape {
+                    appearance USE Metal
+                    geometry Cylinder {
+                      height 0.18
+                      radius 0.004
+                    }
                   }
-                  Solid {
-                    translation 0 0 -0.22
-                    rotation 1 0 0 0
-                    children [
-                      DEF Weight Shape {
-                        appearance PBRAppearance {
-                          baseColor 0 0.666667 0
-                          roughness 1
-                          metalness 0
-                        }
-                        geometry Capsule {
-                          height 0.05
-                          radius 0.03
-                        }
-                      }
-                    ]
-                    name "solid(2)"
+                ]
+              }
+              Transform {
+                translation 0 0 -0.22
+                rotation 1 0 0 0
+                children [
+                  DEF Weight Shape {
+                    appearance PBRAppearance {
+                      baseColor 0 0.666667 0
+                      roughness 1
+                      metalness 0
+                    }
+                    geometry Capsule {
+                      height 0.05
+                      radius 0.03
+                    }
                   }
                 ]
               }
             ]
             name "solid(3)"
+            boundingObject Group {
+              children [
+                Transform {
+                  rotation 1 0 0 0
+                  children [
+                    USE Topcylinder
+                  ]
+                }
+                Transform {
+                  translation 0 0 -0.12
+                  rotation 1 0 0 -1.5708
+                  children [
+                    USE String
+                  ]
+                }
+                Transform {
+                  translation 0 0 -0.22
+                  rotation 1 0 0 0
+                  children [
+                    USE Weight
+                  ]
+                }
+              ]
+            }
+            physics Physics {
+              density -1
+              mass 0.2
+            }
           }
         }
       ]
     }
   ]
-  boundingObject USE Wheel
+  boundingObject Group {
+    children [
+      Transform {
+        translation 0 0.02 0.28
+        rotation 1 0 0 -1.5707953071795862
+        children [
+          USE Wheel
+        ]
+      }
+      Transform {
+        translation 0 0.02 -0.28
+        rotation 1 0 0 -1.5707953071795862
+        children [
+          USE Wheel
+        ]
+      }
+      Transform {
+        translation 0 0.27 0.03
+        scale 1.0236846583009844 1.0236846583009844 1.0236846583009844
+        children [
+          USE TopBox
+        ]
+      }
+      Transform {
+        translation 0 0.27 -0.03
+        scale 1.0236846583009844 1.0236846583009844 1.0236846583009844
+        children [
+          USE TopBox
+        ]
+      }
+      Transform {
+        translation 0 0.149438 0.167442
+        rotation -1 0 0 -0.7854053071795866
+        children [
+          USE SupportBox
+        ]
+      }
+      Transform {
+        translation 0 0.149438 -0.167442
+        rotation 1 0 0 -0.7854053071795866
+        children [
+          USE SupportBox
+        ]
+      }
+    ]
+  }
   physics Physics {
+    density -1
+    mass 0.3
   }
   controller "Triangle_Controller"
 }
