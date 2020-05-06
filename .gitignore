@@ -1,1 +1,5 @@
 .stl
+*.exe
+*.cache
+build/
+.vscode/

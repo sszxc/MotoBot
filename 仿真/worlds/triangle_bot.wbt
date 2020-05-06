@@ -1,9 +1,13 @@
 #VRML_SIM R2020a utf8
 WorldInfo {
+  contactProperties [
+    ContactProperties {
+    }
+  ]
 }
 Viewpoint {
-  orientation -0.09250765394036684 0.9847458336633794 0.14737020406128729 1.992400731647192
-  position 0.8561633583575834 0.4383978451484237 -0.35561741138321057
+  orientation -0.09281894312208538 0.9799124298871951 0.17651139779139377 2.155162861783243
+  position 0.7738445364033073 0.49327472689441915 -0.4769901129753346
 }
 TexturedBackground {
 }
@@ -106,7 +110,7 @@ Robot {
           ]
           endPoint Solid {
             translation 0 0.27 0
-            rotation -1 0 0 1.57
+            rotation -1 0 0 1.5699999999999994
             children [
               Group {
                 children [
@@ -166,5 +170,8 @@ Robot {
       ]
     }
   ]
+  boundingObject USE Wheel
+  physics Physics {
+  }
   controller "Triangle_Controller"
 }

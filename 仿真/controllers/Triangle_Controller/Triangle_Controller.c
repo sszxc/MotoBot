@@ -5,7 +5,7 @@
 WbDeviceTag Steer_Motor;
 
 #define PI 3.1416
-#define STEER_MOTOR_MAX_SPEED  15.0
+#define STEER_MOTOR_MAX_SPEED  2.0
 #define MAX_ANGLE  PI/4
 #define MIN_ANGLE  -PI/4
 
