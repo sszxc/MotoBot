@@ -53,7 +53,7 @@ Robot {
             translation 0 0.4 -0.1
             rotation -1 0 0 1.5699999999999994
             children [
-              Group {
+              DEF EndGroup Group {
                 children [
                   Transform {
                     children [
@@ -102,28 +102,7 @@ Robot {
               }
             ]
             name "solid(3)"
-            boundingObject Group {
-              children [
-                Transform {
-                  children [
-                    USE Topcylinder
-                  ]
-                }
-                Transform {
-                  translation 0 0 -0.12
-                  rotation 1 0 0 -1.5707
-                  children [
-                    USE String
-                  ]
-                }
-                Transform {
-                  translation 0 0 -0.22
-                  children [
-                    USE Weight
-                  ]
-                }
-              ]
-            }
+            boundingObject USE EndGroup
             physics Physics {
               density -1
               mass 0.2
