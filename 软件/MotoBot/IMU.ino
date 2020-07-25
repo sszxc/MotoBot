@@ -14,7 +14,6 @@ float elapsedTime, currentTime, previousTime;
 
 void init_IMU(){
   //陀螺仪初始化
-  Wire.begin();                      // Initialize comunication
   Wire.beginTransmission(MPU);       // Start communication with MPU6050 // MPU=0x68
   Wire.write(0x6B);                  // Talk to the register 6B
   Wire.write(0x00);                  // Make reset - place a 0 into the 6B register

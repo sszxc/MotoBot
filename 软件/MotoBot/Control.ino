@@ -5,7 +5,21 @@
  */
 
 void Motion_control(){
-  
+  // 双舵机测试
+  for (pos = 45; pos <= 135; pos += 30)
+  {
+    steer_servo.write(pos);
+    balance_servo.write(pos);
+    Serial.println(pos);
+    delay(1000);
+  }
+  for (pos = 135; pos >= 45; pos -= 30)
+  {
+    steer_servo.write(pos);
+    balance_servo.write(pos);
+    Serial.println(pos);
+    delay(1000);
+  }
 }
 
 void servo(){
