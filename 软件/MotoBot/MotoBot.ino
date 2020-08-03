@@ -9,18 +9,20 @@
 
 #define ENCODER_A 2
 #define BEEP 4
-#define STEER_SERVO 5
-#define BALANCE_SERVO 6
+#define STEER_SERVO 9
+#define BALANCE_SERVO 10
 #define ENCODER_B 7
-#define MOTOR_F 9
-#define MOTOR_B 10
+#define MOTOR_F 5
+#define MOTOR_B 6
 #define FLYWHEEL 11
+#define FLYWHEEL_DIR 14
+#define BUTTON1 16
+#define BUTTON2 15
 
 float roll, pitch, yaw;
-int flywheel_position = 0;
+long flywheel_position = 0;
 
 Servo steer_servo, balance_servo;
-int pos = 0; // 存储伺服电机角度信息的变量
 
 void BeepandBlink(int t = 100){
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -34,8 +36,13 @@ void BeepandBlink(int t = 100){
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BEEP, OUTPUT);
+  BeepandBlink();
+  
   pinMode(ENCODER_A, INPUT);
   pinMode(ENCODER_B, INPUT);
+  pinMode(BUTTON0, INPUT);
+  pinMode(BUTTON1, INPUT);
+  pinMode(FLYWHEEL_DIR, OUTPUT);
   steer_servo.attach(STEER_SERVO);
   balance_servo.attach(BALANCE_SERVO);
   attachInterrupt(0, flywheel_encoder, CHANGE);
@@ -51,10 +58,18 @@ void setup() {
 }
 
 void loop() { 
-  Read_IMU();
-//  Send_wave();
-//  Motion_control();
-
-  display_demo();
+  if (digitalRead(BUTTON1)==HIGH)//按钮测试
+  {
+    Read_IMU();
+    flywheel();
+    Motion_control();
+    Send_wave();
+    display_demo();
+  }
+  else
+  {
+    BeepandBlink();
+    delay(1000);
+  }
   delay(50);
 }

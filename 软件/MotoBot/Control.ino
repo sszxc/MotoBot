@@ -6,14 +6,14 @@
 
 void Motion_control(){
   // 双舵机测试
-  for (pos = 45; pos <= 135; pos += 30)
+  for (int pos = 45; pos <= 135; pos += 30)
   {
     steer_servo.write(pos);
     balance_servo.write(pos);
     Serial.println(pos);
     delay(1000);
   }
-  for (pos = 135; pos >= 45; pos -= 30)
+  for (int pos = 135; pos >= 45; pos -= 30)
   {
     steer_servo.write(pos);
     balance_servo.write(pos);
@@ -27,7 +27,18 @@ void servo(){
 }
 
 void flywheel(){
-
+  //飞轮测试
+  int pwmout = constrain(pitch, -30, 30)*8;
+  if (pwmout > 0)
+  {
+    digitalWrite(FLYWHEEL_DIR, HIGH);
+    analogWrite(FLYWHEEL, 255 - pwmout);
+  }
+  else
+  {
+    digitalWrite(FLYWHEEL_DIR, LOW);
+    analogWrite(FLYWHEEL, 255 + pwmout);
+  }
 }
 
 void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降沿

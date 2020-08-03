@@ -45,13 +45,17 @@ void display_demo()
   display.print("Author: ");
   display.print("Henry Beta");
 
-  display.setCursor(0, 40);
+  display.setCursor(0, 35);
   display.print(roll);
   display.print("/");
   display.print(pitch);
   display.print("/");
   display.println(yaw);
-  display.display();
+
+  display.setCursor(0, 45);
+  display.print(flywheel_position);
+
+  display.display(); //刷新
 }
 
 void OLED_refresh(){
