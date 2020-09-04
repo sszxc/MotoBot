@@ -28,7 +28,7 @@ void servo(){
 
 void flywheel(){
   //飞轮测试
-  int pwmout = constrain(pitch, -30, 30)*8;
+  int pwmout = constrain(yaw, -30, 30)*8;
   if (pwmout > 0)
   {
     digitalWrite(FLYWHEEL_DIR, HIGH);

@@ -16,8 +16,8 @@
 #define MOTOR_B 6
 #define FLYWHEEL 11
 #define FLYWHEEL_DIR 14
-#define BUTTON1 16
-#define BUTTON2 15
+#define BUTTON0 16
+#define BUTTON1 15
 
 float roll, pitch, yaw;
 long flywheel_position = 0;
@@ -61,15 +61,15 @@ void loop() {
   if (digitalRead(BUTTON1)==HIGH)//按钮测试
   {
     Read_IMU();
-    flywheel();
-    Motion_control();
+    //flywheel();
+    //Motion_control();
     Send_wave();
     display_demo();
   }
   else
   {
-    BeepandBlink();
     delay(1000);
+    BeepandBlink();
   }
   delay(50);
 }

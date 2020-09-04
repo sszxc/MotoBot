@@ -4,6 +4,9 @@
  * Description: MPU6050的初始化、读取、零点漂移、滤波
  *    解算参考https://zhuanlan.zhihu.com/p/100740936
  */
+ 
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
 
 const int MPU = 0x68; // MPU6050 I2C address
 float AccX, AccY, AccZ;
@@ -53,7 +56,7 @@ void calculate_IMU_error(){
     AccErrorX = AccErrorX + ((atan((AccY) / sqrt(pow((AccX), 2) + pow((AccZ), 2))) * 180 / PI));
     AccErrorY = AccErrorY + ((atan(-1 * (AccX) / sqrt(pow((AccY), 2) + pow((AccZ), 2))) * 180 / PI));
     c++;
-    delay(1);
+    delay(2);
   }
   //Divide the sum by 200 to get the error value
   AccErrorX = AccErrorX / 200;
@@ -73,7 +76,7 @@ void calculate_IMU_error(){
     GyroErrorY = GyroErrorY + (GyroY / 131.0);
     GyroErrorZ = GyroErrorZ + (GyroZ / 131.0);
     c++;
-    delay(1);
+    delay(2);
   }
   //Divide the sum by 200 to get the error value
   GyroErrorX = GyroErrorX / 200;
