@@ -6,6 +6,7 @@
 
 #include <Wire.h>
 #include <Servo.h>
+//#include <MsTimer2.h>
 
 #define ENCODER_A 2
 #define BEEP 4
@@ -20,7 +21,11 @@
 #define BUTTON1 15
 
 float roll, pitch, yaw;
-long flywheel_position = 0;
+long flywheel_position[2] = {0};
+float flywheel_speed = 0;
+float flywheel_pwm = 0;
+float flywheel_target = 0;
+float elapsedTime, currentTime, previousTime; // 计时
 
 Servo steer_servo, balance_servo;
 
@@ -46,30 +51,61 @@ void setup() {
   steer_servo.attach(STEER_SERVO);
   balance_servo.attach(BALANCE_SERVO);
   attachInterrupt(0, flywheel_encoder, CHANGE);
-
+    
   Serial.begin(19200);
 
   Wire.begin(); // Initialize comunication
   init_IMU(); 
   init_OLED();
   
-  for (int i = 0; i < 4; i++)
-    BeepandBlink();
+//  MsTimer2::set(50, timerIsr); // 50ms period
+//  MsTimer2::start();
+  
+//  BeepandBlink();
+}
+
+void SerialPrint()
+{ 
+    Serial.print(elapsedTime);
+    Serial.print(",");  
+    Serial.print(roll);
+    Serial.print(",");
+    Serial.print(pitch);
+    Serial.print(",");
+    Serial.print(yaw);
+    Serial.print(",");
+
+//    Serial.print(flywheel_pwm);
+//    Serial.print(",");
+//    Serial.print(flywheel_target);
+//    Serial.print(",");
+//    Serial.print(flywheel_speed);
+
+    Serial.println("");
 }
 
 void loop() { 
+  previousTime = currentTime;
+  currentTime = millis();
+  elapsedTime = (currentTime - previousTime) / 1000;
+  
   if (digitalRead(BUTTON1)==HIGH)//按钮测试
   {
+    flywheel_target = millis() / 10 % 2000 - millis() / 10 % 100; 
+    
     Read_IMU();
-    //flywheel();
+    flywheel_readspeed();
+    flywheel();
+    
     //Motion_control();
-    Send_wave();
     display_demo();
+    
+    //Send_wave();
+    SerialPrint();
   }
   else
   {
     delay(1000);
     BeepandBlink();
   }
-  delay(50);
 }

@@ -28,16 +28,20 @@ void servo(){
 
 void flywheel(){
   //飞轮测试
-  int pwmout = constrain(yaw, -30, 30)*8;
-  if (pwmout > 0)
+//  flywheel_pwm += 0.05*(flywheel_target - flywheel_speed);
+
+  flywheel_pwm = millis() / 100 % 200 - millis() / 100 % 10; 
+ 
+  flywheel_pwm = constrain(flywheel_pwm, -100, 100);
+  if (flywheel_pwm > 0)
   {
-    digitalWrite(FLYWHEEL_DIR, HIGH);
-    analogWrite(FLYWHEEL, 255 - pwmout);
+    digitalWrite(FLYWHEEL_DIR, LOW);
+    analogWrite(FLYWHEEL, 255.0 - flywheel_pwm);
   }
   else
   {
-    digitalWrite(FLYWHEEL_DIR, LOW);
-    analogWrite(FLYWHEEL, 255 + pwmout);
+    digitalWrite(FLYWHEEL_DIR, HIGH);
+    analogWrite(FLYWHEEL, 255.0 + flywheel_pwm);
   }
 }
 
@@ -47,13 +51,19 @@ void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降�
   {
     // 查询ENB的电平以确认是顺时针还是逆时针旋转
     if (digitalRead(ENCODER_B) == LOW)
-      flywheel_position++;
+      flywheel_position[1]++;
   }
   // ENA脚上升沿中断触发
   else
   {
     // 查询ENB的电平以确认是顺时针还是逆时针旋转
     if (digitalRead(ENCODER_B) == LOW)
-      flywheel_position--;
-  }  
+      flywheel_position[1]--;
+  }
+}
+
+void flywheel_readspeed()//定时器中断处理函数
+{
+  flywheel_speed = (flywheel_position[1] - flywheel_position[0])/elapsedTime;
+  flywheel_position[0] = flywheel_position[1];
 }

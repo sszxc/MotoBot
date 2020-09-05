@@ -33,6 +33,6 @@ void Send_wave()
   var[0] = roll;
   var[1] = pitch;
   var[2] = yaw;
-  var[3] = flywheel_position;
+  var[3] = flywheel_speed;
   vcan_sendware((uint8_t *)var, sizeof(var));
 }

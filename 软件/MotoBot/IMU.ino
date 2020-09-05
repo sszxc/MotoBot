@@ -2,18 +2,16 @@
  * Author: Xuechao Zhang
  * Date: July 24th, 2020
  * Description: MPU6050的初始化、读取、零点漂移、滤波
- *    解算参考https://zhuanlan.zhihu.com/p/100740936
+ *    解算参考https://zhuanlan.zhihu.com/p/100740936（弃）
+ *    卡尔曼滤波参考https://github.com/jjundot/MPU6050_Kalman
  */
- 
 #include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
 
 const int MPU = 0x68; // MPU6050 I2C address
 float AccX, AccY, AccZ;
 float GyroX, GyroY, GyroZ;
 float accAngleX, accAngleY, gyroAngleX, gyroAngleY, gyroAngleZ;
 float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY, GyroErrorZ;
-float elapsedTime, currentTime, previousTime;
 
 void init_IMU(){
   //陀螺仪初始化
@@ -110,9 +108,9 @@ void Read_IMU(){
   accAngleX = (atan(AccY / sqrt(pow(AccX, 2) + pow(AccZ, 2))) * 180 / PI) - AccErrorX; // AccErrorX See the calculate_IMU_error()custom function for more details
   accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ, 2))) * 180 / PI) - AccErrorY; // AccErrorY
   // === Read gyroscope data === //
-  previousTime = currentTime;        // Previous time is stored before the actual time read
-  currentTime = millis();            // Current time actual time read
-  elapsedTime = (currentTime - previousTime) / 1000; // Divide by 1000 to get seconds
+//  previousTime = currentTime;        // Previous time is stored before the actual time read
+//  currentTime = millis();            // Current time actual time read
+//  elapsedTime = (currentTime - previousTime) / 1000; // Divide by 1000 to get seconds
   Wire.beginTransmission(MPU);
   Wire.write(0x43); // Gyro data first register address 0x43
   Wire.endTransmission(false);
@@ -134,9 +132,9 @@ void Read_IMU(){
   pitch = filter_para * gyroAngleY + (1-filter_para) * accAngleY;
   
   // Print the values on the serial monitor
-  // Serial.print(roll);
-  // Serial.print("/");
-  // Serial.print(pitch);
-  // Serial.print("/");
-  // Serial.println(yaw);
+//   Serial.print(roll);
+//   Serial.print(",");
+//   Serial.print(pitch);
+//   Serial.print(",");
+//   Serial.println(yaw);
 }
