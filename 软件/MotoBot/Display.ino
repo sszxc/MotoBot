@@ -13,8 +13,9 @@
 // const int OLED = 0x3C; // OLED I2C address
 
 // 自定义重置引脚,虽然教程未使用,但却是Adafruit_SSD1306库文件所必需的
-#define OLED_RESET 17
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//#define OLED_RESET 17
+//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 void init_OLED(){
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  

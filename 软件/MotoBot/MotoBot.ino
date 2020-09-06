@@ -6,7 +6,6 @@
 
 #include <Wire.h>
 #include <Servo.h>
-//#include <MsTimer2.h>
 
 #define ENCODER_A 2
 #define BEEP 4
@@ -20,10 +19,12 @@
 #define BUTTON0 16
 #define BUTTON1 15
 
-float roll, pitch, yaw;
+float roll = 0, pitch = 0, yaw = 0;
+float last_pitch = 0;
 long flywheel_position[2] = {0};
 float flywheel_speed = 0;
 float flywheel_pwm = 0;
+float flywheel_pwm_d = 0;
 float flywheel_target = 0;
 float elapsedTime, currentTime, previousTime; // 计时
 
@@ -36,6 +37,32 @@ void BeepandBlink(int t = 100){
   digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
   digitalWrite(BEEP, LOW);
   delay(t);
+}
+
+void forceidle()
+{
+  analogWrite(FLYWHEEL, 255);
+  noInterrupts();
+  while(1);
+}
+
+void SerialPrint()
+{ 
+//    Serial.print(elapsedTime);
+//    Serial.print(",");  
+//    Serial.print(roll);
+//    Serial.print(",");
+    Serial.print(pitch*10.0);
+    Serial.print(",");
+//    Serial.print(yaw);    
+//    Serial.print(",");
+    Serial.print(flywheel_pwm_d);
+//    Serial.print(",");
+//    Serial.print(flywheel_target);
+    Serial.print(",");
+    Serial.print(flywheel_speed/100.0);
+
+    Serial.println();
 }
 
 void setup() {
@@ -58,30 +85,8 @@ void setup() {
   init_IMU(); 
   init_OLED();
   
-//  MsTimer2::set(50, timerIsr); // 50ms period
-//  MsTimer2::start();
-  
-//  BeepandBlink();
-}
-
-void SerialPrint()
-{ 
-    Serial.print(elapsedTime);
-    Serial.print(",");  
-    Serial.print(roll);
-    Serial.print(",");
-    Serial.print(pitch);
-    Serial.print(",");
-    Serial.print(yaw);
-    Serial.print(",");
-
-//    Serial.print(flywheel_pwm);
-//    Serial.print(",");
-//    Serial.print(flywheel_target);
-//    Serial.print(",");
-//    Serial.print(flywheel_speed);
-
-    Serial.println("");
+  BeepandBlink();
+  delay(1000);
 }
 
 void loop() { 
@@ -95,10 +100,11 @@ void loop() {
     
     Read_IMU();
     flywheel_readspeed();
+    
     flywheel();
     
     //Motion_control();
-    display_demo();
+    //display_demo();
     
     //Send_wave();
     SerialPrint();
@@ -108,4 +114,7 @@ void loop() {
     delay(1000);
     BeepandBlink();
   }
+
+  if(pitch>20 or pitch<-20)
+    forceidle(); //翻车
 }

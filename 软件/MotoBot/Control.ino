@@ -29,9 +29,9 @@ void servo(){
 void flywheel(){
   //飞轮测试
 //  flywheel_pwm += 0.05*(flywheel_target - flywheel_speed);
-
-  flywheel_pwm = millis() / 100 % 200 - millis() / 100 % 10; 
- 
+  
+  flywheel_PID();
+  
   flywheel_pwm = constrain(flywheel_pwm, -100, 100);
   if (flywheel_pwm > 0)
   {
@@ -43,6 +43,13 @@ void flywheel(){
     digitalWrite(FLYWHEEL_DIR, HIGH);
     analogWrite(FLYWHEEL, 255.0 + flywheel_pwm);
   }
+}
+
+void flywheel_PID()
+{  
+  flywheel_pwm_d = 1.4 * pitch + 35.0 * (pitch - last_pitch);
+  flywheel_pwm += flywheel_pwm_d;
+  last_pitch = pitch;
 }
 
 void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降沿
