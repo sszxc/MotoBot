@@ -25,6 +25,7 @@ long flywheel_position[2] = {0};
 float flywheel_speed = 0;
 float flywheel_pwm = 0;
 float flywheel_target = 0;
+float fw_kp = 0, fw_kd = 35.0;
 float elapsedTime, currentTime, previousTime; // 计时
 
 Servo steer_servo, balance_servo;
@@ -57,25 +58,6 @@ void forceidle()
       delay(100);  
     }
   }  
-}
-
-void SerialPrint()
-{ 
-//    Serial.print(elapsedTime);
-//    Serial.print(",");  
-    Serial.print(roll);
-    Serial.print(",");
-    Serial.print(pitch);
-    Serial.print(",");
-    Serial.print(yaw);    
-//    Serial.print(",");
-//    Serial.print(flywheel_pwm_d);
-//    Serial.print(",");
-//    Serial.print(flywheel_target);
-//    Serial.print(",");
-//    Serial.print(flywheel_speed/100.0);
-
-    Serial.println();
 }
 
 void setup() {

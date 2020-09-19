@@ -28,7 +28,7 @@ void servo(){
 
 void flywheel(){
   //飞轮测试
-//  flywheel_pwm += 0.05*(flywheel_target - flywheel_speed);
+//  flywheel_pwm += 0.05*(flywheel_target - flywheel_speed);// 放弃速度环
   
   flywheel_PID();
   
@@ -47,7 +47,7 @@ void flywheel(){
 
 void flywheel_PID()
 {  
-  flywheel_pwm += 0 * roll + 35.0 * (roll - last_roll);
+  flywheel_pwm += fw_kp * roll + fw_kd * (roll - last_roll);
   last_roll = roll;
 }
 
