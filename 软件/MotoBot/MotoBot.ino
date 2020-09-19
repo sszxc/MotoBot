@@ -43,6 +43,9 @@ void forceidle()
 {
   analogWrite(FLYWHEEL, 255);
   noInterrupts();
+  display.setCursor(0, 30);
+  display.print("Warning!");
+  display.display(); //刷新
   while(1);
 }
 
@@ -50,17 +53,17 @@ void SerialPrint()
 { 
 //    Serial.print(elapsedTime);
 //    Serial.print(",");  
-//    Serial.print(roll);
-//    Serial.print(",");
-    Serial.print(pitch*10.0);
+    Serial.print(roll);
     Serial.print(",");
-//    Serial.print(yaw);    
+    Serial.print(pitch);
+    Serial.print(",");
+    Serial.print(yaw);    
 //    Serial.print(",");
-    Serial.print(flywheel_pwm_d);
+//    Serial.print(flywheel_pwm_d);
 //    Serial.print(",");
 //    Serial.print(flywheel_target);
-    Serial.print(",");
-    Serial.print(flywheel_speed/100.0);
+//    Serial.print(",");
+//    Serial.print(flywheel_speed/100.0);
 
     Serial.println();
 }
@@ -104,7 +107,7 @@ void loop() {
     flywheel();
     
     //Motion_control();
-    //display_demo();
+    display_demo();
     
     //Send_wave();
     SerialPrint();
