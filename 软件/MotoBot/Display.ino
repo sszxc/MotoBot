@@ -66,3 +66,10 @@ void display_demo()
 void OLED_refresh(){
 
 }
+
+void DisplayWarning(int pos){
+  display.clearDisplay();
+  display.setCursor(0, pos);
+  display.print("Warning!");
+  display.display();
+}

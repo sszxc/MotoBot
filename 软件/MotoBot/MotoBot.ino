@@ -20,11 +20,10 @@
 #define BUTTON1 15
 
 float roll = 0, pitch = 0, yaw = 0;
-float last_pitch = 0;
+float last_roll = 0;
 long flywheel_position[2] = {0};
 float flywheel_speed = 0;
 float flywheel_pwm = 0;
-float flywheel_pwm_d = 0;
 float flywheel_target = 0;
 float elapsedTime, currentTime, previousTime; // 计时
 
@@ -41,12 +40,23 @@ void BeepandBlink(int t = 100){
 
 void forceidle()
 {
-  analogWrite(FLYWHEEL, 255);
-  noInterrupts();
-  display.setCursor(0, 30);
-  display.print("Warning!");
-  display.display(); //刷新
-  while(1);
+  if(roll>30 or roll<-30)
+  {
+    analogWrite(FLYWHEEL, 255);
+    DisplayWarning(10);
+    while(1)
+      if(digitalRead(BUTTON1)==LOW)
+        break;
+    DisplayWarning(20);
+    while(1)
+      if(digitalRead(BUTTON1)==HIGH)
+        break;
+    while(roll>30 or roll<-30)
+    {
+      Read_IMU(); // 大概率overflow
+      delay(100);  
+    }
+  }  
 }
 
 void SerialPrint()
@@ -110,7 +120,7 @@ void loop() {
     display_demo();
     
     //Send_wave();
-    SerialPrint();
+    //SerialPrint();
   }
   else
   {
@@ -118,6 +128,5 @@ void loop() {
     BeepandBlink();
   }
 
-  if(pitch>20 or pitch<-20)
-    forceidle(); //翻车
+  forceidle(); //翻车
 }

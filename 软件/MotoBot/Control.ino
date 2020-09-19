@@ -47,9 +47,8 @@ void flywheel(){
 
 void flywheel_PID()
 {  
-  flywheel_pwm_d = 1.4 * pitch + 35.0 * (pitch - last_pitch);
-  flywheel_pwm += flywheel_pwm_d;
-  last_pitch = pitch;
+  flywheel_pwm += 0 * roll + 35.0 * (roll - last_roll);
+  last_roll = roll;
 }
 
 void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降沿
