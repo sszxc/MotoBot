@@ -4,7 +4,7 @@
  * Description: 转向、平衡、飞轮、驱动电机控制
  */
 
-void Motion_control(){
+void servo_control(){
   // 双舵机测试
   for (int pos = 45; pos <= 135; pos += 30)
   {
@@ -22,36 +22,37 @@ void Motion_control(){
   }
 }
 
-void servo(){
+void balance_control(){
+  static float last_roll = 0;
   
-}
-
-void flywheel(){
-  //飞轮测试
-//  flywheel_pwm += 0.05*(flywheel_target - flywheel_speed);// 放弃速度环
+  flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; ;
+  int pwm_out = flywheel_PID(flywheel_target);
   
-  flywheel_PID();
-  
-  flywheel_pwm = constrain(flywheel_pwm, -100, 100);
-  if (flywheel_pwm > 0)
+  pwm_out = constrain(pwm_out, -100, 100); // 限幅
+  if (pwm_out > 0) // 方向控制
   {
     digitalWrite(FLYWHEEL_DIR, LOW);
-    analogWrite(FLYWHEEL, 255.0 - flywheel_pwm);
+    analogWrite(FLYWHEEL, 255.0 - pwm_out);
   }
   else
   {
     digitalWrite(FLYWHEEL_DIR, HIGH);
-    analogWrite(FLYWHEEL, 255.0 + flywheel_pwm);
+    analogWrite(FLYWHEEL, 255.0 + pwm_out);
   }
 }
 
-void flywheel_PID()
-{  
-  flywheel_pwm += fw_kp * roll + fw_kd * (roll - last_roll);
-  last_roll = roll;
+int flywheel_PID(int target) // 速度环
+{ 
+  static int fw_pwm, error, error_last = 0, error_sum;
+  error = target - flywheel_speed;
+  error_sum += error;
+  error_sum = constrain(error_sum, -10, 10); // 限幅
+  fw_pwm += fw_kp * error + fw_ki * error_sum + fw_kd * (error - error_last);
+  error_last = error;
+  return fw_pwm;
 }
 
-void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降沿
+void flywheel_encoder(){ // 感觉可以减少一半的中断触发 只看下降沿
   // ENA脚下降沿中断触发
   if (digitalRead(ENCODER_A) == LOW)
   {
@@ -68,7 +69,7 @@ void flywheel_encoder(){ //感觉可以减少一半的中断触发 只看下降�
   }
 }
 
-void flywheel_readspeed()//定时器中断处理函数
+void flywheel_readspeed() // 作差计算速度
 {
   flywheel_speed = (flywheel_position[1] - flywheel_position[0])/elapsedTime;
   flywheel_position[0] = flywheel_position[1];

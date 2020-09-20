@@ -21,7 +21,7 @@ void init_OLED(){
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  
 }
 
-void display_demo()
+void display_regular()
 {
   // 清除屏幕
   display.clearDisplay();
@@ -54,8 +54,8 @@ void display_demo()
   display.println(yaw);
 
   display.setCursor(0, 40);
-  display.print("PWM: ");
-  display.print(flywheel_pwm);
+  display.print("Target: ");
+  display.print(flywheel_target);
   display.setCursor(0, 50);
   display.print("Speed: ");
   display.print(flywheel_speed);
