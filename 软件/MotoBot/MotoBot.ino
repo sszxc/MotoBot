@@ -4,6 +4,8 @@
  * Description: 自行车机器人
  */
 
+//#define OLED_DEBUG
+
 #include <Wire.h>
 #include <Servo.h>
 
@@ -23,7 +25,7 @@ float roll = 0, pitch = 0, yaw = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
 float fw_kp = 0.02, fw_ki = 0.003, fw_kd = 0.01;
-float bl_kp = 0.0, bl_kd = 35.0;
+float bl_kp = 10.0, bl_kd = 0.0;
 float elapsedTime, currentTime, previousTime; // 计时
 
 Servo steer_servo, balance_servo;
@@ -76,10 +78,20 @@ void setup() {
 
   Wire.begin(); // Initialize comunication
   init_IMU(); 
-  init_OLED();
+  #ifdef OLED_DEBUG
+    init_OLED();
+  #endif
   
   BeepandBlink();
-  delay(1000);
+//  while (millis() < 20000) //等待稳定读数
+//  {
+//    SerialPrint();
+//    #ifdef OLED_DEBUG
+//      display_regular();
+//    #endif
+//    Read_IMU();
+//  }
+//  BeepandBlink();
 }
 
 void loop() { 
@@ -93,20 +105,21 @@ void loop() {
   {
     balance_control();    
     //servo_control();
-
-    //Send_wave();
-    SerialPrint();    
   }
   else
   {
     delay(1000);
     BeepandBlink();
-  }  
-    
-  //display_regular();
+  } 
+  
+  //Send_wave(); 
+  SerialPrint();
+  #ifdef OLED_DEBUG
+    display_regular();
+  #endif
   
   serial_paratuning();// 串口调参
-  forceidle(999); //翻车
+  forceidle(3000); //翻车
   
-  while (millis()-currentTime<50); // 手动50ms
+  while (millis()-currentTime<50); // 手动50ms控制周期
 }

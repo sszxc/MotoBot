@@ -24,11 +24,17 @@ void servo_control(){
 
 void balance_control(){
   static float last_roll = 0;
+  int pwm_out = 0;
+
+  //flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; // 速度环调试
+  flywheel_target = bl_kp * (roll - 0) + bl_kd * (roll - last_roll);
   
-  flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; ;
-  int pwm_out = flywheel_PID(flywheel_target);
-  
+  if (digitalRead(BUTTON0)==HIGH)
+    pwm_out = flywheel_PID(flywheel_target);
+  else
+    pwm_out = flywheel_target / 20; // 速度开环
   pwm_out = constrain(pwm_out, -100, 100); // 限幅
+  if (pwm_out < 5 && pwm_out > -5) pwm_out = 0; //防止烧电机
   if (pwm_out > 0) // 方向控制
   {
     digitalWrite(FLYWHEEL_DIR, LOW);
@@ -39,6 +45,7 @@ void balance_control(){
     digitalWrite(FLYWHEEL_DIR, HIGH);
     analogWrite(FLYWHEEL, 255.0 + pwm_out);
   }
+  last_roll = roll;
 }
 
 int flywheel_PID(int target) // 速度环

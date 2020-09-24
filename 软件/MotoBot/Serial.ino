@@ -40,8 +40,8 @@ void Send_wave()
 // 用于Arduino串口绘图器
 void SerialPrint()
 { 
-    Serial.print(elapsedTime*1000);
-    Serial.print(",");  
+//    Serial.print(elapsedTime*1000);
+//    Serial.print(",");  
 //    Serial.print(roll);
 //    Serial.print(",");
 //    Serial.print(pitch);
@@ -99,11 +99,10 @@ void serial_paratuning() {
 //    }
 
     // 变量赋值
-    if (Datanum == 3)
+    if (Datanum == 2)
     {
-      fw_kp = atof(revbuf[0]);
-      fw_ki = atof(revbuf[1]);
-      fw_kd = atof(revbuf[2]);
+      bl_kp = atof(revbuf[0]);
+      bl_kp = atof(revbuf[1]);
     }
     
     memset(serialBuffer,0,50);
