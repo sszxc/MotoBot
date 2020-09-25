@@ -23,17 +23,31 @@ void servo_control(){
 }
 
 void balance_control(){
-  static float last_roll = 0;
-  int pwm_out = 0;
+//  static float last_roll;
+  static float roll_sum;
 
-  //flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; // 速度环调试
-  flywheel_target = bl_kp * (roll - 0) + bl_kd * (roll - last_roll);
+
+  if (abs(roll - last_roll)>10)
+  {
+    roll = last_roll; // 去掉异常值
+    Serial.print("fuckfuck");
+  }
+
+  roll_sum += roll;
+  roll_sum = constrain(roll_sum, -1000, 1000); // 限幅
   
-  if (digitalRead(BUTTON0)==HIGH)
+  //flywheel_target = bl_kp * (roll - 0) + bl_ki * roll_sum + bl_kd * (roll - last_roll);
+
+  // 串级一下
+  flywheel_target = bl_kp * (roll - flywheel_speed * 0.003) + bl_ki * roll_sum + bl_kd * (roll - last_roll);
+  
+  //flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; // 速度环调试
+  if (digitalRead(BUTTON0)==HIGH) // 速度开环
     pwm_out = flywheel_PID(flywheel_target);
   else
-    pwm_out = flywheel_target / 20; // 速度开环
-  pwm_out = constrain(pwm_out, -100, 100); // 限幅
+    pwm_out = flywheel_target / 20;
+    
+  pwm_out = constrain(pwm_out, -200, 200); // 限幅
   if (pwm_out < 5 && pwm_out > -5) pwm_out = 0; //防止烧电机
   if (pwm_out > 0) // 方向控制
   {

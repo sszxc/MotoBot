@@ -5,6 +5,7 @@
  */
 
 //#define OLED_DEBUG
+#define SERIAL_PARATUNING
 
 #include <Wire.h>
 #include <Servo.h>
@@ -21,13 +22,15 @@
 #define BUTTON0 16
 #define BUTTON1 15
 
-float roll = 0, pitch = 0, yaw = 0;
+float roll = 0, pitch = 0, yaw = 0, last_roll = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
-float fw_kp = 0.02, fw_ki = 0.003, fw_kd = 0.01;
-float bl_kp = 10.0, bl_kd = 0.0;
-float elapsedTime, currentTime, previousTime; // 计时
-
+float fw_kp = 0.02, fw_ki = 0.003, fw_kd = 0;//0.01;
+float bl_kp = -1300.0, bl_ki = 0.0, bl_kd = -1800.0;
+unsigned long currentTime, previousTime; // 计时
+float elapsedTime;
+int pwm_out = 0;
+  
 Servo steer_servo, balance_servo;
 
 void BeepandBlink(int t = 100){
@@ -39,7 +42,7 @@ void BeepandBlink(int t = 100){
   delay(t);
 }
 
-void forceidle(int angle = 30)
+void forceidle(int angle = 20)
 {
   if(roll>angle or roll<-angle) // 翻车 需要拨一下开关恢复
   {
@@ -57,6 +60,7 @@ void forceidle(int angle = 30)
       Read_IMU(); // 大概率overflow
       delay(100);  
     }
+    BeepandBlink();
   }  
 }
 
@@ -74,7 +78,7 @@ void setup() {
   balance_servo.attach(BALANCE_SERVO);
   attachInterrupt(0, flywheel_encoder, CHANGE);
     
-  Serial.begin(19200);
+  Serial.begin(115200);
 
   Wire.begin(); // Initialize comunication
   init_IMU(); 
@@ -82,8 +86,8 @@ void setup() {
     init_OLED();
   #endif
   
-  BeepandBlink();
-//  while (millis() < 20000) //等待稳定读数
+//  BeepandBlink();
+//  while (millis() < 25000) //等待稳定读数
 //  {
 //    SerialPrint();
 //    #ifdef OLED_DEBUG
@@ -91,13 +95,13 @@ void setup() {
 //    #endif
 //    Read_IMU();
 //  }
-//  BeepandBlink();
+  BeepandBlink();
 }
 
 void loop() { 
   previousTime = currentTime;
   currentTime = millis();
-  elapsedTime = (currentTime - previousTime) / 1000; // 一个循环的时间 用于测速
+  elapsedTime = (currentTime - previousTime) / 1000.0; // 一个循环的时间 用于测速
   Read_IMU(); // 读陀螺仪
   flywheel_readspeed(); // 读编码器  
 
@@ -118,8 +122,11 @@ void loop() {
     display_regular();
   #endif
   
-  serial_paratuning();// 串口调参
-  forceidle(3000); //翻车
+  #ifdef SERIAL_PARATUNING
+    serial_paratuning();// 串口调参
+  #endif
   
-  while (millis()-currentTime<50); // 手动50ms控制周期
+  forceidle(); //翻车
+  
+  while (millis()-currentTime<20); // 手动20ms控制周期
 }

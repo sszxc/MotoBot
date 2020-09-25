@@ -42,15 +42,15 @@ void SerialPrint()
 { 
 //    Serial.print(elapsedTime*1000);
 //    Serial.print(",");  
-//    Serial.print(roll);
-//    Serial.print(",");
+    Serial.print(roll*1000);
+    Serial.print(",");
 //    Serial.print(pitch);
 //    Serial.print(",");
 //    Serial.print(yaw);    
 //    Serial.print(",");
     Serial.print(flywheel_target);
     Serial.print(",");
-    Serial.print(flywheel_speed);
+    Serial.print(pwm_out*20);
     Serial.println();
 }
 
@@ -99,10 +99,11 @@ void serial_paratuning() {
 //    }
 
     // 变量赋值
-    if (Datanum == 2)
+    if (Datanum == 3)
     {
       bl_kp = atof(revbuf[0]);
-      bl_kp = atof(revbuf[1]);
+      bl_ki = atof(revbuf[1]);
+      bl_kd = atof(revbuf[2]);
     }
     
     memset(serialBuffer,0,50);
