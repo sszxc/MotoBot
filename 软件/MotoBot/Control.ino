@@ -22,7 +22,7 @@ void servo_control(){
   }
 }
 
-void balance_control_v2(){
+void balance_control_v2_copy(){
   static float pre_roll = 0;
   static float angle_error = 0,pre_angle_error = 0,pre_pre_angle_error = 0;
   static float veloc_error = 0,pre_veloc_error = 0,pre_pre_veloc_error = 0;
@@ -69,6 +69,51 @@ void balance_control_v2(){
   }
 }
 
+void balance_control_v2(){
+  static float pre_roll = 0;
+  static float angle_error = 0,pre_angle_error = 0,pre_pre_angle_error = 0;
+  static float veloc_error = 0,pre_veloc_error = 0,pre_pre_veloc_error = 0;
+  static float roll_sum;
+  static float velocity_out,angle_out;
+  
+  //速度误差
+  veloc_error = -flywheel_speed;
+  //速度环
+  velocity_out += fw_kp*(veloc_error - pre_veloc_error)+  fw_ki*veloc_error;
+  //velocity_out = 0;
+  //角度环
+  //去掉角度异常值
+  if (abs(roll - pre_roll)>10)
+  {
+    roll = pre_roll; 
+    Serial.print("fuckfuck");
+  }
+//  float tmp = 0.25;
+//  roll = tmp*roll + (1-tmp)*pre_roll;
+  //roll = -1.5;
+  angle_error = velocity_out - (1.5 + roll);
+  angle_out = bl_kp*angle_error + bl_kd * (angle_error - pre_angle_error);
+  //并级控制
+  pwm_out = angle_out;
+  //存储速度误差
+  pre_veloc_error = veloc_error;
+  //存储角度误差
+  pre_angle_error = angle_error;
+  pre_roll = roll;
+  //PWM 输出
+  pwm_out = constrain(pwm_out, -254, 254); // 限幅
+  //if (pwm_out > -5 && pwm_out < 5) pwm_out = 0; //防止烧电机
+  if (pwm_out > 0) // 方向控制
+  {
+    digitalWrite(FLYWHEEL_DIR, LOW);
+    analogWrite(FLYWHEEL, 255 - pwm_out);
+  }
+  else
+  {
+    digitalWrite(FLYWHEEL_DIR, HIGH);
+    analogWrite(FLYWHEEL, 255 + pwm_out);
+  }
+}
 void balance_control(){
   static float last_roll;
   static float roll_sum;

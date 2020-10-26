@@ -22,7 +22,7 @@
 #define BUTTON1 16 //拨码开关 1,靠近电源开关,按下是 LOW
 #define BUTTON2 15 //拨码开关 2
 
-float roll = 0, pitch = 0, yaw = 0;
+float roll = 0, pitch = 0, yaw = 0,roll_new;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = -1.5;
 // float fw_kp = 0.02, fw_ki = 0.003, fw_kd = 0;//0.01; //速度环
@@ -61,7 +61,7 @@ void forceidle(int angle = 40)
         break;
     while(roll>angle or roll<-angle)
     {
-      Read_IMU(); // 大概率overflow
+      Read_ICM(); // 大概率overflow
       delay(100);  
     }
     BeepandBlink();
@@ -94,7 +94,7 @@ void setup() {
   // 开始通信
   Wire.begin(); // Initialize comunication
   // 初始化陀螺仪
-  init_IMU(); 
+  init_ICM(); 
   // 初始化OLED
   #ifdef OLED_DEBUG
     init_OLED();
@@ -121,13 +121,14 @@ void loop() {
   // 一个循环的时间, 单位：s, 用于测速
   elapsedTime = (currentTime - previousTime) / 1000.0; 
   // 读陀螺仪
-  Read_IMU(); 
+  //Read_IMU_new(); 
+  Read_ICM(); 
   // 读编码器 
   flywheel_readspeed();  
   //拨码开关 2 未按下就进行直立控制
   if (digitalRead(BUTTON2)==HIGH)
   {
-    balance_control_v2();    
+    balance_control_v2_copy();    
     //servo_control();
   }
   else
