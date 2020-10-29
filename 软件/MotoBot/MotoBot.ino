@@ -4,7 +4,7 @@
  * Description: 自行车机器人
  */
 
-//#define OLED_DEBUG
+// #define OLED_DEBUG
 #define SERIAL_PARATUNING
 
 #include <Wire.h>
@@ -26,8 +26,8 @@ float roll = 0, pitch = 0, yaw = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
 float fw_kp = 0.02, fw_ki = 0, fw_kd = 0.04; //电机PID
-float bl_kp = -1300.0, bl_ki = 0.0, bl_kd = -1800.0; //直立角度环
-float sp_kp = 0.003;                                 //直立速度环
+float bl_kp = -450.0, bl_ki = 0.0, bl_kd = -500.0; //直立角度环
+float sp_kp = 0.0035;                              //直立速度环
 // float fw_kp = 0.0, fw_ki = 0.0, fw_kd = 0;//0.01; //速度环
 // float bl_kp = -65.0, bl_ki = 0.0, bl_kd = -25.0; //角度环节 //-46 0 -25
 unsigned long currentTime, previousTime = 0; // 计时

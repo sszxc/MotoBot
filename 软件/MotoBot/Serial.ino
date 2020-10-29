@@ -40,20 +40,21 @@ void Send_wave()
 // 用于Arduino串口绘图器
 void SerialPrint_init()
 {
-  Serial.println("elapsedTime/ms,roll");
+  Serial.println("elapsedTime/ms,target,speed");
   // Serial.println("roll*1000");
 }
 void SerialPrint()
 {
   Serial.print(elapsedTime * 1000);
   Serial.print(",");
-  Serial.print(roll);
+  // Serial.print(roll);
   // Serial.print(",");
   // Serial.print(pitch);
   // Serial.print(",");
   // Serial.print(yaw);
-  // Serial.print(",");
-  // Serial.print(flywheel_target);
+  Serial.print(flywheel_target);
+   Serial.print(",");
+   Serial.print(flywheel_speed);
   // Serial.print(",");
   // Serial.print(flywheel_speed);
   Serial.println();
@@ -108,11 +109,12 @@ bool serial_paratuning()
     // }
 
     // 变量赋值
-    if (Datanum == 3)
+    if (Datanum == 4)
     {
       bl_kp = atof(revbuf[0]);
       bl_ki = atof(revbuf[1]);
       bl_kd = atof(revbuf[2]);
+      sp_kp = atof(revbuf[3]);
     }
 
     memset(serialBuffer, 0, 50);

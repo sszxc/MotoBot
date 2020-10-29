@@ -122,17 +122,16 @@ void balance_control(){
   roll_sum += roll;
   roll_sum = constrain(roll_sum, -1000, 1000); // 限幅
   
-  // flywheel_target = bl_kp * (roll - 0) + bl_ki * roll_sum + bl_kd * (roll - last_roll);
+  // flywheel_target = bl_kp * roll + bl_ki * roll_sum + bl_kd * (roll - last_roll);
 
   // 串级一下
   flywheel_target = bl_kp * (roll - flywheel_speed * sp_kp) + bl_ki * roll_sum + bl_kd * (roll - last_roll);
 
   // flywheel_target = millis() / 10 % 1000 - millis() / 10 % 200; // 速度环调试
   
-  // 速度闭环
+  // 速度闭环 or 开环
   if (digitalRead(BUTTON1)==HIGH) 
     pwm_out = flywheel_PID(flywheel_target);
-  // 速度开环
   else
     pwm_out = flywheel_target / 20;
     
