@@ -45,8 +45,8 @@ void SerialPrint_init()
 }
 void SerialPrint()
 {
-  Serial.print(steer_angle);
-  Serial.print(",");
+  // Serial.print(steer_angle);
+  // Serial.print(",");
   Serial.print(roll);
   // Serial.print(",");
   // Serial.print(pitch);
@@ -70,9 +70,13 @@ void SerialRead()
     {
       case 'U':
         /* Speed Up */
+        motor_speed += 10;
+        Serial.print(motor_speed);
         break;
       case 'D':
         /* Slow down */
+        motor_speed -= 10;
+        Serial.print(motor_speed);
         break;
       case 'L':
         /*Turn Left */
@@ -89,19 +93,19 @@ void SerialRead()
         break;
       case '1':
         /*bw_kp += ? ; */
-        bw_kp += 10;
+        bl_kp += 10;
         break;
       case '2':
         /*bw_kp -= ? ; */
-        bw_kp -= 10;
+        bl_kp -= 10;
         break;
       case '3':
         /*bw_kd += ? ; */
-        bw_kd += 10;
+        bl_kd += 10;
         break;
       case '4':
         /*bw_kd -= ? ; */
-        bw_kd -= 10;
+        bl_kd -= 10;
         break;
       case '5':
         /*sp_kp += ? ; */

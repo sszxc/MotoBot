@@ -5,7 +5,7 @@
  */
 
 // #define OLED_DEBUG
-// #define SERIAL_PARATUNING
+#define SERIAL_PARATUNING
 
 #include <Wire.h>
 #include <Servo.h>
@@ -25,7 +25,8 @@
 float roll = 0, pitch = 0, yaw = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
-float fw_kp = 0.02, fw_ki = 0, fw_kd = 0.04; //电机PID
+int motor_speed = 0;//电机速度，(-255,+255)
+float fw_kp = 0.02, fw_ki = 0, fw_kd = 0.04;       //飞轮电机PID
 float bl_kp = -450.0, bl_ki = 0.0, bl_kd = -500.0; //直立角度环
 float sp_kp = 0.0035;                              //直立速度环
 // float fw_kp = 0.0, fw_ki = 0.0, fw_kd = 0;//0.01; //速度环
@@ -85,6 +86,9 @@ void setup() {
   pinMode(BUTTON2, INPUT);
   // 配置飞轮
   pinMode(FLYWHEEL_DIR, OUTPUT);
+  //配置电机
+  pinMode(MOTOR_F,OUTPUT);
+  pinMode(MOTOR_B,OUTPUT);
   // 配置转向舵机
   steer_servo.attach(STEER_SERVO);
   steer_servo.write(steer_angle);
@@ -97,10 +101,10 @@ void setup() {
   //Serial.begin(115200);
   Serial.begin(9600);
 
-  // #ifdef SERIAL_PARATUNING
-  //   while (!serial_paratuning())
-  //     ; // 串口调参
-  // #endif
+  #ifdef SERIAL_PARATUNING
+    while (!serial_paratuning())
+      ; // 串口调参
+  #endif
   
   // 开始通信
   Wire.begin(); // Initialize comunication
@@ -112,7 +116,7 @@ void setup() {
   #endif
 
   // 蜂鸣器响
-  // BeepandBlink();
+  BeepandBlink();
   SerialPrint_init();
   previousTime = millis();
 }
@@ -131,7 +135,8 @@ void loop() {
   if (digitalRead(BUTTON2)==HIGH)
   {
     balance_control();
-    direction_control();//方向控制
+    // direction_control();//方向控制
+    // speed_control();//速度控制
     // balance_control_v2_copy();    
   }
   else
@@ -143,8 +148,8 @@ void loop() {
   //Send_wave(); 
 
   // 串口打印
-  //SerialPrint();
-  SerialRead();
+   SerialPrint();
+  // SerialRead();
   #ifdef OLED_DEBUG
     display_regular();
   #endif

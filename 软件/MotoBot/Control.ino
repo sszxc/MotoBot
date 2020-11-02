@@ -48,6 +48,19 @@ void direction_control(){
   }
 }
 
+void speed_control(){
+  motor_speed = constrain(motor_speed,-255,255);
+  if (motor_speed > 0)
+  {
+    analogWrite(MOTOR_F, motor_speed); 
+    analogWrite(MOTOR_B, 0); 
+  }
+  else
+  {
+    analogWrite(MOTOR_F, 0); 
+    analogWrite(MOTOR_B, -motor_speed); 
+  }
+}
 void balance_control_v2_copy(){
   static float pre_roll = 0;
   static float angle_error = 0,pre_angle_error = 0,pre_pre_angle_error = 0;
