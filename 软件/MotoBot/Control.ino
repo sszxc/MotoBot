@@ -22,6 +22,45 @@ void servo_control(){
   }
 }
 
+float ct_cirlce = 0;//舵机控制周期
+char steer_acc = 0;//转向增量
+void direction_control(){
+  ct_cirlce += elapsedTime;
+  // 0.02 s 控制一次
+  if (ct_cirlce >= 0.02) 
+  {
+    ct_cirlce = 0;//重新计数控制周期
+    if(steer_acc != 0)
+    {
+      //上一时刻角度变化方向与当前要求不一致，立刻角度制动
+      if ((steer_acc < 0 && BT_char == 'R')||(steer_acc > 0 && BT_char == 'L'))
+      {
+        steer_acc = 0;//角度增量置 0
+      } 
+      steer_angle += steer_acc;//改变角度 
+      steer_angle = constrain(steer_angle,21,170);//输出限幅
+      if (steer_angle == 21 || steer_acc == 170) 
+      {
+        steer_acc = 0;//舵机打死，角度增量置 0
+      }
+    }
+    steer_servo.write(steer_angle); 
+  }
+}
+
+void speed_control(){
+  motor_speed = constrain(motor_speed,-255,255);
+  if (motor_speed > 0)
+  {
+    analogWrite(MOTOR_F, motor_speed); 
+    analogWrite(MOTOR_B, 0); 
+  }
+  else
+  {
+    analogWrite(MOTOR_F, 0); 
+    analogWrite(MOTOR_B, -motor_speed); 
+  }
+}
 void balance_control_v2_copy(){
   static float pre_roll = 0;
   static float angle_error = 0,pre_angle_error = 0,pre_pre_angle_error = 0;
