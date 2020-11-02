@@ -40,24 +40,81 @@ void Send_wave()
 // 用于Arduino串口绘图器
 void SerialPrint_init()
 {
-  Serial.println("elapsedTime/ms,target,speed");
+  // Serial.println("elapsedTime/ms,target,speed");
   // Serial.println("roll*1000");
 }
 void SerialPrint()
 {
-  Serial.print(elapsedTime * 1000);
+  Serial.print(steer_angle);
   Serial.print(",");
-  // Serial.print(roll);
+  Serial.print(roll);
   // Serial.print(",");
   // Serial.print(pitch);
   // Serial.print(",");
   // Serial.print(yaw);
-  Serial.print(flywheel_target);
-   Serial.print(",");
-   Serial.print(flywheel_speed);
+  //Serial.print(flywheel_target);
+  //Serial.print(",");
+  //Serial.print(flywheel_speed);
   // Serial.print(",");
   // Serial.print(flywheel_speed);
   Serial.println();
+}
+
+void SerialRead()
+{
+  if(Serial.available()>0)
+  {
+    BT_char = Serial.read();
+    Serial.print(BT_char);
+    switch (BT_char)
+    {
+      case 'U':
+        /* Speed Up */
+        break;
+      case 'D':
+        /* Slow down */
+        break;
+      case 'L':
+        /*Turn Left */
+        steer_acc -= 1;
+        Serial.print(steer_angle);
+        break;
+      case 'R':
+        /*Turn Right */
+        steer_acc += 1;
+        Serial.print(steer_angle);
+        break;
+      case 'S':
+        /* stop*/
+        break;
+      case '1':
+        /*bw_kp += ? ; */
+        bw_kp += 10;
+        break;
+      case '2':
+        /*bw_kp -= ? ; */
+        bw_kp -= 10;
+        break;
+      case '3':
+        /*bw_kd += ? ; */
+        bw_kd += 10;
+        break;
+      case '4':
+        /*bw_kd -= ? ; */
+        bw_kd -= 10;
+        break;
+      case '5':
+        /*sp_kp += ? ; */
+        sp_kp += 0.0001;
+        break;
+      case '6':
+        /*sp_kp -= ? ; */
+        sp_kp -= 0.0001;
+        break;
+      default:
+        break;
+    }
+}
 }
 
 // 串口调参
@@ -91,7 +148,8 @@ void split(char *src, const char *separator, char **dest, int *num)
 bool serial_paratuning()
 {
   if (Serial.available())
-  { // 当串口接收到信息后
+  { 
+    // 当串口接收到信息后
     //Serial.println("Received Serial Data:");
     Serial.readBytes(serialBuffer, bufferLength); // 将接收到的信息使用readBytes读取
 
