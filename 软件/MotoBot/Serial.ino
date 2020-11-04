@@ -84,7 +84,7 @@ void SerialRead()
         Serial.print(steer_angle);
         break;
       case 'R':
-        /*Turn Right */
+        /*Turn Right */  54.79,4.76,2.03
         steer_acc += 1;
         Serial.print(steer_angle);
         break;

@@ -5,7 +5,7 @@
  */
 
 // #define OLED_DEBUG
-#define SERIAL_PARATUNING
+// #define SERIAL_PARATUNING
 
 #include <Wire.h>
 #include <Servo.h>
@@ -25,7 +25,6 @@
 float roll = 0, pitch = 0, yaw = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
-int motor_speed = 0;//电机速度，(-255,+255)
 float fw_kp = 0.02, fw_ki = 0, fw_kd = 0.04;       //飞轮电机PID
 float bl_kp = -450.0, bl_ki = 0.0, bl_kd = -500.0; //直立角度环
 float sp_kp = 0.0035;                              //直立速度环
@@ -36,9 +35,16 @@ float elapsedTime;
 int pwm_out = 0;
 char BT_char = '0';//蓝牙控制字,默认为 '0'
 int steer_angle = 90;//21 - 170
+float steer_kp = 0.0; //打角 P
+float steer_kd = 0.0;
+int motor_speed = 100;//电机速度，(-255,+255)
+float speed_kp = 0.0; //速度 P
+
+
 Servo steer_servo, balance_servo;
 
-void BeepandBlink(bool Bee_En = true){
+void BeepandBlink(){
+  bool Bee_En = true;
   int t = 100;
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
   if(Bee_En) digitalWrite(BEEP, HIGH);
@@ -77,7 +83,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BEEP, OUTPUT);
   //蜂鸣器响
-  //BeepandBlink();
+  BeepandBlink();
   //配置编码器
   pinMode(ENCODER_A, INPUT);
   pinMode(ENCODER_B, INPUT);
@@ -135,21 +141,21 @@ void loop() {
   if (digitalRead(BUTTON2)==HIGH)
   {
     balance_control();
-    // direction_control();//方向控制
-    // speed_control();//速度控制
+    direction_control();//方向控制
+    speed_control();//速度控制
     // balance_control_v2_copy();    
   }
   else
   {
     delay(1000);
-    //BeepandBlink();
+    BeepandBlink();
   } 
   // 山外示波器
   //Send_wave(); 
 
   // 串口打印
-   SerialPrint();
-  // SerialRead();
+  SerialPrint();
+  SerialRead();
   #ifdef OLED_DEBUG
     display_regular();
   #endif
