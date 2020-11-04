@@ -47,7 +47,7 @@ void SerialPrint()
 {
   // Serial.print(steer_angle);
   // Serial.print(",");
-  Serial.print(roll);
+  Serial.println(roll);
   // Serial.print(",");
   // Serial.print(pitch);
   // Serial.print(",");
@@ -57,7 +57,7 @@ void SerialPrint()
   //Serial.print(flywheel_speed);
   // Serial.print(",");
   // Serial.print(flywheel_speed);
-  Serial.println();
+  //Serial.println();
 }
 
 void SerialRead()
@@ -65,31 +65,35 @@ void SerialRead()
   if(Serial.available()>0)
   {
     BT_char = Serial.read();
-    Serial.print(BT_char);
+    Serial.println(BT_char);
     switch (BT_char)
     {
       case 'U':
         /* Speed Up */
         motor_speed += 10;
-        Serial.print(motor_speed);
+        Serial.println(motor_speed);
         break;
       case 'D':
         /* Slow down */
         motor_speed -= 10;
-        Serial.print(motor_speed);
+        Serial.println(motor_speed);
         break;
       case 'L':
         /*Turn Left */
         steer_acc -= 1;
-        Serial.print(steer_angle);
+        // steer_angle -= 1;
+        Serial.println(steer_angle);
         break;
       case 'R':
-        /*Turn Right */  54.79,4.76,2.03
+        /*Turn Right */
         steer_acc += 1;
-        Serial.print(steer_angle);
+        // steer_angle += 1;
+        Serial.println(steer_angle);
         break;
       case 'S':
-        /* stop*/
+        /* Stop*/
+        motor_speed = 0;
+        Serial.println(motor_speed);
         break;
       case '1':
         /*bw_kp += ? ; */
@@ -171,12 +175,15 @@ bool serial_paratuning()
     // }
 
     // 变量赋值
-    if (Datanum == 4)
+    if (Datanum == 3)
     {
-      bl_kp = atof(revbuf[0]);
-      bl_ki = atof(revbuf[1]);
-      bl_kd = atof(revbuf[2]);
-      sp_kp = atof(revbuf[3]);
+      //bl_kp = atof(revbuf[0]);
+      motor_speed = atof(revbuf[0]);
+      steer_kp = atof(revbuf[1]);
+      steer_kd = atof(revbuf[2]);
+      // bl_ki = atof(revbuf[1]);
+      // bl_kd = atof(revbuf[2]);
+      // sp_kp = atof(revbuf[3]);
     }
 
     memset(serialBuffer, 0, 50);

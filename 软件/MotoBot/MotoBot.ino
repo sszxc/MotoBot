@@ -4,8 +4,9 @@
  * Description: 自行车机器人
  */
 
-// #define OLED_DEBUG
-// #define SERIAL_PARATUNING
+// #define OLED_DEBUG        //OLED调参模式
+#define SERIAL_PARATUNING //串口调试模式
+// #define TELE_MODE         //遥控模式
 
 #include <Wire.h>
 #include <Servo.h>
@@ -37,7 +38,7 @@ char BT_char = '0';//蓝牙控制字,默认为 '0'
 int steer_angle = 90;//21 - 170
 float steer_kp = 0.0; //打角 P
 float steer_kd = 0.0;
-int motor_speed = 100;//电机速度，(-255,+255)
+int motor_speed = 0;//电机速度，(-255,+255)
 float speed_kp = 0.0; //速度 P
 
 
@@ -57,7 +58,7 @@ void BeepandBlink(){
 //翻车则强制停止
 void forceidle(int angle = 20)
 {
-  if(roll>angle or roll<-angle) // 翻车 需要拨一下开关恢复 大概率影响IMU读数
+  if(roll>angle || roll<-angle) // 翻车 需要拨一下开关恢复 大概率影响IMU读数
   {
     analogWrite(FLYWHEEL, 255);
    // DisplayWarning(10);
@@ -68,7 +69,7 @@ void forceidle(int angle = 20)
     while(1)
       if(digitalRead(BUTTON2)==HIGH)
         break;
-    while(roll>angle or roll<-angle)
+    while(roll>angle || roll<-angle)
     {
       Read_IMU();
       delay(100);  
@@ -140,10 +141,9 @@ void loop() {
   //拨码开关 2 未按下 进行直立控制
   if (digitalRead(BUTTON2)==HIGH)
   {
-    balance_control();
+    balance_control();  //平衡控制
     direction_control();//方向控制
-    speed_control();//速度控制
-    // balance_control_v2_copy();    
+    speed_control();    //速度控制
   }
   else
   {
@@ -156,7 +156,8 @@ void loop() {
   // 串口打印
   SerialPrint();
   SerialRead();
-  #ifdef OLED_DEBUG
+  // OLED调参模式
+  #ifdef OLED_DEBUG 
     display_regular();
   #endif
   // 串口调参
