@@ -24,7 +24,8 @@ void servo_control(){
 
 float ct_cirlce = 0;//舵机控制周期
 char steer_acc = 0;//转向增量
-void direction_control(){
+//遥控舵机
+void direction_telecontrol(){
   ct_cirlce += elapsedTime;
   // 0.02 s 控制一次
   if (ct_cirlce >= 0.02) 
@@ -38,7 +39,7 @@ void direction_control(){
         steer_acc = 0;//角度增量置 0
       } 
       steer_angle += steer_acc;//改变角度 
-      steer_angle = constrain(steer_angle,21,170);//输出限幅
+      //steer_angle = constrain(steer_angle,21,170);//输出限幅
       if (steer_angle == 21 || steer_acc == 170) 
       {
         steer_acc = 0;//舵机打死，角度增量置 0
@@ -48,8 +49,27 @@ void direction_control(){
   }
 }
 
+//PID舵机
+float roll_pre = 0;
+void direction_control(){
+  #ifdef TELE_MODE //遥控模式
+    direction_telecontrol();
+    //steer_servo.write(steer_angle); 
+    return;
+  #endif
+  // PD 控制
+  steer_angle = steer_kp*(roll+2) + steer_kd*(roll - roll_pre);
+  roll_pre = roll;
+  steer_angle = constrain(steer_angle,-65,65);//输出限幅
+  steer_servo.write(steer_angle + 90); 
+}
+
 void speed_control(){
-  motor_speed = constrain(motor_speed,-255,255);
+  // #ifndef TELE_MODE //PID模式
+  //   // P 控制
+  //   motor_speed = speed_kp*roll;
+  // #endif
+  motor_speed = constrain(motor_speed,-255,255);//输出限幅
   if (motor_speed > 0)
   {
     analogWrite(MOTOR_F, motor_speed); 
@@ -61,6 +81,8 @@ void speed_control(){
     analogWrite(MOTOR_B, -motor_speed); 
   }
 }
+
+
 void balance_control_v2_copy(){
   static float pre_roll = 0;
   static float angle_error = 0,pre_angle_error = 0,pre_pre_angle_error = 0;
