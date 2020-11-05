@@ -27,20 +27,20 @@ float roll = 0, pitch = 0, yaw = 0;
 long flywheel_position[2] = {0}; // 编码器 前一时刻和当前时刻
 float flywheel_speed = 0, flywheel_target = 0;
 float fw_kp = 0.02, fw_ki = 0, fw_kd = 0.04;       //飞轮电机PID
-float bl_kp = -450.0, bl_ki = 0.0, bl_kd = -500.0; //直立角度环
-float sp_kp = 0.0035;                              //直立速度环
-// float fw_kp = 0.0, fw_ki = 0.0, fw_kd = 0;//0.01; //速度环
-// float bl_kp = -65.0, bl_ki = 0.0, bl_kd = -25.0; //角度环节 //-46 0 -25
+// float bl_kp = -450.0, bl_ki = 0.0, bl_kd = -500.0; //直立角度环(测试架)
+// float sp_kp = 0.0035;                              //直立速度环(测试架)
+float bl_kp = -1400.0, bl_ki = 0.0, bl_kd = -100.0; //直立角度环
+float sp_kp = 0.0003;                               //直立速度环
 unsigned long currentTime, previousTime = 0; // 计时
 float elapsedTime;
 int pwm_out = 0;
 char BT_char = '0';//蓝牙控制字,默认为 '0'
-int steer_angle = 90;//21 - 170
-float steer_kp = 0.0; //打角 P
-float steer_kd = 0.0;
-int motor_speed = 0;//电机速度，(-255,+255)
+int steer_angle = 90; //±65°
+float steer_kp = -3.0; //打角 P
+float steer_kd = 0.5;
+int motor_speed = 170;//电机速度，(-255,+255)
 float speed_kp = 0.0; //速度 P
-
+float roll_offset = -2.3;
 
 Servo steer_servo, balance_servo;
 
@@ -56,12 +56,15 @@ void BeepandBlink(){
 }
 
 //翻车则强制停止
-void forceidle(int angle = 20)
+void forceidle(int angle = 23)
 {
-  if(roll>angle || roll<-angle) // 翻车 需要拨一下开关恢复 大概率影响IMU读数
+  if(roll>angle || roll< -angle) // 翻车 需要拨一下开关恢复 大概率影响IMU读数
   {
     analogWrite(FLYWHEEL, 255);
-   // DisplayWarning(10);
+    analogWrite(MOTOR_F, 0);
+    analogWrite(MOTOR_B, 0);
+    steer_servo.write(90);
+    // DisplayWarning(10);
     while(1)
       if(digitalRead(BUTTON2)==LOW)
         break;
@@ -74,7 +77,7 @@ void forceidle(int angle = 20)
       Read_IMU();
       delay(100);  
     }
-    //BeepandBlink();
+    BeepandBlink();
   }  
 }
 
@@ -109,8 +112,9 @@ void setup() {
   Serial.begin(9600);
 
   #ifdef SERIAL_PARATUNING
+    Serial.println("waiting for para!");
     while (!serial_paratuning())
-      ; // 串口调参
+    ; // 串口调参
   #endif
   
   // 开始通信
@@ -164,7 +168,7 @@ void loop() {
   #ifdef SERIAL_PARATUNING
     serial_paratuning();
   #endif
-  //forceidle(); //翻车检测
+  forceidle(); //翻车检测
   // 手动控制周期为 20ms
   while (millis()-currentTime<20); 
   // 更新上一时刻
