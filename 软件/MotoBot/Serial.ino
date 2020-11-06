@@ -40,24 +40,22 @@ void Send_wave()
 // 用于Arduino串口绘图器
 void SerialPrint_init()
 {
-  // Serial.println("elapsedTime/ms,target,speed");
+  Serial.println("target,speed");
   // Serial.println("roll*1000");
 }
 void SerialPrint()
 {
   // Serial.print(steer_angle);
   // Serial.print(",");
-  Serial.println(roll);
+  // Serial.println(roll * 1000);
   // Serial.print(",");
   // Serial.print(pitch);
   // Serial.print(",");
   // Serial.print(yaw);
-  //Serial.print(flywheel_target);
-  //Serial.print(",");
-  //Serial.print(flywheel_speed);
-  // Serial.print(",");
-  // Serial.print(flywheel_speed);
-  //Serial.println();
+  Serial.print(flywheel_target);
+  Serial.print(",");
+  Serial.print(flywheel_speed);
+  Serial.println();
 }
 
 void SerialRead()
@@ -177,13 +175,12 @@ bool serial_paratuning()
     // 变量赋值
     if (Datanum == 3)
     {
-      //bl_kp = atof(revbuf[0]);
-      motor_speed = atof(revbuf[0]);
-      steer_kp = atof(revbuf[1]);
-      steer_kd = atof(revbuf[2]);
-      // bl_ki = atof(revbuf[1]);
-      // bl_kd = atof(revbuf[2]);
-      // sp_kp = atof(revbuf[3]);
+      // motor_speed = atof(revbuf[0]);
+      // steer_kp = atof(revbuf[1]);
+      // steer_kd = atof(revbuf[2]);
+      bl_kp = atof(revbuf[0]);
+      bl_kd = atof(revbuf[1]);
+      sp_kp = atof(revbuf[2]);
     }
 
     memset(serialBuffer, 0, 50);
